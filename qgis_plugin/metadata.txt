@@ -1,0 +1,15 @@
+general=Name=Botswana Geodetic Suite
+general=Description=Integration of geodetic calculations with QGIS for coordinate transformations and adjustments
+general=Version=1.0.0
+general=QgisMinimumVersion=3.22
+general=QgisMaximumVersion=3.99
+general=Author=Botswana Geodetic Team
+general=Email=info@bw-geodetic.bw
+general=Changelog=
+general=Experimental=False
+general=Deprecated=False
+general=Homepage=https://github.com/your-repo
+general=Repository=https://github.com/your-repo
+general=Tracker=https://github.com/your-repo/issues
+general=Icon=icon.svg
+general=Category=Analysis

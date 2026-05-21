@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: bw-geodetic-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=BotswanaGeodeticEngine
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - __pycache__
+            - .pytest_cache
+    networks:
+      - geodetic-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build: ./web
+    container_name: bw-geodetic-web-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    develop:
+      watch:
+        - action: sync
+          path: ./web/src
+          target: /app/src
+    networks:
+      - geodetic-network
+    depends_on:
+      - backend
+    command: npm run dev
+
+  frontend-streamlit:
+    build: ./frontend
+    container_name: bw-geodetic-frontend-dev
+    ports:
+      - "8501:8501"
+    environment:
+      - ENVIRONMENT=development
+    volumes:
+      - ./frontend:/app
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+    depends_on:
+      - backend
+    networks:
+      - geodetic-network
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+
+networks:
+  geodetic-network:
+    driver: bridge
